@@ -31,6 +31,7 @@ jobs:
           fetch-depth: 0
 
       - name: PHP Code Sniffer
-        run: composer config repositories.beakerboy vcshttps://github.com/Beakerboy/VBA_Tokenizer
-        run: composer require beakerboy/vba_tokenizer:dev-master
-        run: vendor/bin/phpcs --extensions=cls/vba,bas/vba --standard=vendor/beakerboy/vba_tokenizer/src/Standards/VBA /src
+        run: |
+          composer config repositories.beakerboy vcshttps://github.com/Beakerboy/VBA_Tokenizer
+          composer require beakerboy/vba_tokenizer:dev-master
+          vendor/bin/phpcs --extensions=cls/vba,bas/vba --standard=vendor/beakerboy/vba_tokenizer/src/Standards/VBA /src
