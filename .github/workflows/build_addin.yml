@@ -28,4 +28,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          args: '${{ github.workspace }}/Addin.xlam'
+          args: '$GITHUB_WORKSPACE/Addin.xlam'
