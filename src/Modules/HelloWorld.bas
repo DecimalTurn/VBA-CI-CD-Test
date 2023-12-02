@@ -1,4 +1,4 @@
 Attribute VB_Name = "HelloWorld"
 Function hello()
-    MsgBox "Hello World"
+    MsgBox "Hello Mom"
 End Function
