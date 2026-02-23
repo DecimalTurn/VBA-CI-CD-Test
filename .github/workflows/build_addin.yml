@@ -26,8 +26,15 @@ jobs:
       - name: Generate the artifacts
         uses: DecimalTurn/build-excel-addin@dev
       - name: Upload the artifacts
-        uses: skx/github-action-publish-binaries@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: actions/upload-artifact@v4
         with:
-          args: 'Addin.xlam'
+          name: Addin.xlam
+          path: Addin.xlam
+          if-no-files-found: error
+
+      - name: Upload release asset
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: Addin.xlam
+          fail_on_unmatched_files: true
