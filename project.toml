@@ -3,7 +3,7 @@ requires = ["excladdingenerator>=61.0"]
 
 [project]
 name = "Hello World"
-version = "0.0.17"
+version = "0.0.18"
 authors = [
   { name="Kevin Nowaczyk", email="beakerboy99@yahoo.com" },
 ]
