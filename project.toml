@@ -1,0 +1,20 @@
+[build-system]
+requires = ["excladdingenerator>=61.0"]
+
+[project]
+name = "Hello World"
+version = "0.0.17"
+authors = [
+  { name="Kevin Nowaczyk", email="beakerboy99@yahoo.com" },
+]
+description = "Print to a message box"
+readme = "README.md"
+
+classifiers = [
+    "Programming Language :: VBA :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+[project.urls]
+"Homepage" = "https://github.com/Beakerboy/VBA-CI-CD-Test"
+"Bug Tracker" = "https://github.com/Beakerboy/VBA-CI-CD-Test/issues"
