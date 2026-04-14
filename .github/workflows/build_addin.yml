@@ -3,8 +3,11 @@ name: Handle Release
 on:
   release:
     types: [created]
+
+  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
   contents: read
   pages: write
@@ -20,31 +23,40 @@ jobs:
       repository-projects: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Generate the artifacts
         uses: Vba-actions/build-excel-addin@v1
 
-      # NEW: create a *draft* release only for manual runs
+      # Create a *draft* release when manually triggered, then capture its numeric release id
+      # so the upload step never targets /releases/null/...
       - name: Create draft release (workflow_dispatch only)
         if: github.event_name == 'workflow_dispatch'
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
           TAG="draft-${GITHUB_RUN_ID}"
           TITLE="Draft build ${GITHUB_RUN_NUMBER}"
+
           gh release create "$TAG" \
             --draft \
             --title "$TITLE" \
             --notes "Draft release created by workflow run ${GITHUB_RUN_ID}."
 
-      # Upload to release (works for both event types):
-      # - release event: action discovers release id from event
-      # - workflow_dispatch: action discovers release id by the tag we just created
+          RELEASE_ID="$(gh api "repos/${GITHUB_REPOSITORY}/releases/tags/${TAG}" --jq .id)"
+          echo "RELEASE_ID=$RELEASE_ID" >> "$GITHUB_ENV"
+          echo "Draft release id: $RELEASE_ID"
+
+      # For normal release-triggered runs, use the release id from the event payload
+      - name: Set RELEASE_ID from release event (release trigger only)
+        if: github.event_name == 'release'
+        run: echo "RELEASE_ID=${{ github.event.release.id }}" >> "$GITHUB_ENV"
+
       - name: Upload the artifacts
         uses: skx/github-action-publish-binaries@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           args: 'Addin.xlam'
+          releaseId: ${{ env.RELEASE_ID }}
