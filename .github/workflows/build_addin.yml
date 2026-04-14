@@ -3,15 +3,13 @@ name: Handle Release
 on:
   release:
     types: [created]
-
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
   contents: read
   pages: write
   id-token: write
+
 jobs:
   generate:
     name: Create release-artifacts
@@ -23,8 +21,27 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+
       - name: Generate the artifacts
         uses: Vba-actions/build-excel-addin@v1
+
+      # NEW: create a *draft* release only for manual runs
+      - name: Create draft release (workflow_dispatch only)
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          TAG="draft-${GITHUB_RUN_ID}"
+          TITLE="Draft build ${GITHUB_RUN_NUMBER}"
+          gh release create "$TAG" \
+            --draft \
+            --title "$TITLE" \
+            --notes "Draft release created by workflow run ${GITHUB_RUN_ID}."
+
+      # Upload to release (works for both event types):
+      # - release event: action discovers release id from event
+      # - workflow_dispatch: action discovers release id by the tag we just created
       - name: Upload the artifacts
         uses: skx/github-action-publish-binaries@master
         env:
