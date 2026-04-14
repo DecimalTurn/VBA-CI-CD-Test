@@ -1,0 +1,31 @@
+name: build-artifacts
+
+on:
+  release:
+    types: [created]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  generate:
+    name: Create artifacts
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Generate the artifacts
+        uses: Vba-actions/build-excel-addin@v1
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Addin
+          path: Addin.xlam
+          if-no-files-found: error
